@@ -13,5 +13,19 @@ export const auth = betterAuth({
             enabled: true,
       },
       trustedOrigins: ["http://localhost:4000"],
-      appName: "Hostinger",
+      appName: "Provenance",
+      account: {
+            additionalFields: {
+                  portfolioSlug: {
+                        type: "string",
+                        required: false,
+                        defaultValue: "",
+                  },
+                  isSetupComplete: {
+                        type: "boolean",
+                        required: false,
+                        defaultValue: false,
+                  },
+            },
+      },
 });
