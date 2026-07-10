@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
       title: "Create Next App",
@@ -19,7 +21,11 @@ export default function RootLayout({
 }>) {
       return (
             <html lang="en" className={montserrat.className}>
-                  <body className="min-h-full flex flex-col">{children}</body>
+                  <body className="min-h-full flex flex-col">
+                        <Navbar />
+                        {children}
+                        <Footer />
+                  </body>
             </html>
       );
 }
