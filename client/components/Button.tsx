@@ -21,7 +21,7 @@ const Button = ({
 }: ButtonProps) => {
       const variants = {
             primary: "bg-white text-black hover:bg-white/90",
-            secondary: "bg-white/30 text-white hover:bg-white hover:text-primary",
+            secondary: "bg-white/30 text-white hover:bg-white",
             ghost: "bg-transparent text-white hover:bg-white/10",
       };
 
@@ -38,11 +38,10 @@ const Button = ({
                   disabled={disabled}
                   className={`
                         font-medium
-                        rounded-none 
                         transition-all 
                         disabled:opacity-50 
                         disabled:cursor-not-allowed
-                        hover:rounded-md
+                        rounded-md
                         duration-300
                         ${variants[variant]}
                         ${sizes[size]}

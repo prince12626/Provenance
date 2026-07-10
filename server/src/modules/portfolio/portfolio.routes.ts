@@ -1,22 +1,25 @@
 import { Router } from "express";
 import { body } from "express-validator";
-import { handleCreateIntegratedPortfolio } from "./portfolio.controller.js";
+import {
+      handleCreateIntegratedPortfolio,
+      handleGetPortfolio,
+} from "./portfolio.controller.js";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.use(authMiddleware)
+router.get("/:slug", handleGetPortfolio);
+
+router.use(authMiddleware);
 
 router.post(
-      "/create",
+      "/deploy",
       [
             body("slug")
                   .notEmpty()
-                  .withMessage("Slug value is mandatory")
+                  .withMessage("Slug is required")
                   .isAlphanumeric()
-                  .withMessage(
-                        "Slug must be strictly alphanumeric (no special characters/spaces)",
-                  )
+                  .withMessage("Only letters and numbers")
                   .trim(),
       ],
       handleCreateIntegratedPortfolio,

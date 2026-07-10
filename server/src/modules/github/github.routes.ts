@@ -5,6 +5,7 @@ import {
       handleGithubCallback,
       handleGithubSync,
       handleGithubUnlink,
+      handleGithubProfile,
 } from "./github.controller.js";
 import { authMiddleware } from "../../middlewares/auth.middleware.js";
 
@@ -13,6 +14,7 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get("/connect", handleGithubConnect);
+router.get("/profile", handleGithubProfile);
 
 router.get(
       "/callback",

@@ -4,12 +4,14 @@ import { toNodeHandler } from "better-auth/node";
 import githubRoutes from "../modules/github/github.routes.js";
 import leetcodeRoutes from "../modules/leetcode/leetcode.route.js";
 import portfolioRoutes from "../modules/portfolio/portfolio.routes.js";
+import userRoutes from "../modules/user/user.route.js";
 
 const router = Router();
 
 // Authentication via Better Auth
 router.use("/authentication", toNodeHandler(auth));
 
+router.use("/user", userRoutes);
 router.use("/github", githubRoutes);
 router.use("/leetcode", leetcodeRoutes);
 router.use("/portfolio", portfolioRoutes);
