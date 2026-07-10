@@ -21,15 +21,12 @@ export const handleCreateIntegratedPortfolio = async (
             const userId = (req as any).user?.id || req.body.userId;
 
             if (!userId) {
-                  return res
-                        .status(401)
-                        .json({
-                              status: "error",
-                              message: "Unauthorized credentials mapping",
-                        });
+                  return res.status(401).json({
+                        status: "error",
+                        message: "Unauthorized credentials mapping",
+                  });
             }
 
-            // 1. Check Unique Slug Bounds
             const existingSlug = await FinalPortfolio.findOne({
                   portfolioSlug: slug.toLowerCase(),
             });
@@ -40,15 +37,13 @@ export const handleCreateIntegratedPortfolio = async (
                   });
             }
 
-            // 2. Fetch standalone profiles snapshots concurrently
             const [githubProfile, leetcodeProfile] = await Promise.all([
                   GithubProfile.findOne({ userId }),
                   LeetCodeProfile.findOne({ userId }),
             ]);
 
-            const dynamicSubdomain = `https://${slug.toLowerCase()}.yourplatform.com`;
+            const dynamicSubdomain = `${process.env.FRONTEND_URL}/p/${slug.toLowerCase()}`;
 
-            // 3. Structural mapping directly combining raw + nested collections data
             const consolidatedPortfolio = await FinalPortfolio.findOneAndUpdate(
                   { userId },
                   {
@@ -66,11 +61,10 @@ export const handleCreateIntegratedPortfolio = async (
                         name: githubProfile?.name || "",
                         email: githubProfile?.email || "",
                         phone: phone || githubProfile?.phone || "",
-                        avatar: githubProfile?.avatar || "", // Fallback profile image links array check
+                        avatar: githubProfile?.avatar || "",
                         links: links || [],
                         socials: socials || [],
 
-                        // Injecting pure full data blocks directly into embedded objects
                         github: githubProfile
                               ? {
                                       username: githubProfile.username,
@@ -111,7 +105,7 @@ export const handleCreateIntegratedPortfolio = async (
 
             return res.status(200).json({
                   status: "success",
-                  message: "Unified single-document portfolio generated seamlessly",
+                  message: "Portfolio generated.",
                   data: consolidatedPortfolio,
             });
       } catch (error: any) {
@@ -122,5 +116,27 @@ export const handleCreateIntegratedPortfolio = async (
                         error.message ||
                         "Failure to bundle aggregated structures",
             });
+      }
+};
+
+export const handleGetPortfolio = async (req: Request, res: Response) => {
+      try {
+            const { slug } = req.params;
+            const portfolio = await FinalPortfolio.findOne({
+                  portfolioSlug: slug.toLowerCase(),
+            }).lean();
+
+            if (!portfolio) {
+                  return res.status(404).json({
+                        status: "error",
+                        message: "Portfolio not found",
+                  });
+            }
+
+            return res.status(200).json({ status: "success", data: portfolio });
+      } catch (error: any) {
+            return res
+                  .status(500)
+                  .json({ status: "error", message: error.message });
       }
 };

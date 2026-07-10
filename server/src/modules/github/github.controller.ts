@@ -5,6 +5,7 @@ import {
       syncGithubDataToDb,
       unlinkGithubDataFromDb,
 } from "./github.service.js";
+import { GithubProfile } from "./github.model.js";
 
 const validateRequest = (req: Request, res: Response): boolean => {
       const errors = validationResult(req);
@@ -23,36 +24,38 @@ export const handleGithubConnect = (req: Request, res: Response) => {
 export const handleGithubCallback = async (req: Request, res: Response) => {
       if (!validateRequest(req, res)) return;
 
+      const FRONTEND_URL = process.env.FRONTEND_URL ?? "http://localhost:3000";
+
       try {
             const code = req.query.code as string;
 
             const oauthData = await exchangeCodeForToken(code);
             const { accessToken, username } = oauthData;
+            if (!req.user) {
+                  return res.json({
+                        message: "Unauthorised!",
+                  });
+            }
+            const userId = req.user.id;
+            console.log(userId);
+            console.log(`GitHub connected for: ${username}, starting sync...`);
 
-            const userId = (req as any).user?._id;
-            console.log(JSON.stringify(req.user));
-            console.log(
-                  `User connected GitHub successfully. Starting AUTOMATIC initial sync for: ${username}`,
+            await syncGithubDataToDb(userId, accessToken);
+
+            // ✅ Frontend pe redirect with success flag
+            return res.redirect(
+                  `${FRONTEND_URL}/dashboard/connection/github?status=success`,
             );
-
-            const syncedProfile = await syncGithubDataToDb(userId, accessToken);
-
-            return res.status(200).json({
-                  status: "success",
-                  message: "GitHub connected and data synchronized automatically successfully",
-                  data: syncedProfile,
-            });
       } catch (error: any) {
-            console.error(
-                  "Error in handleGithubCallback automatic sync:",
-                  error.message,
+            console.error("Error in handleGithubCallback:", error.message);
+
+            // ❌ Error bhi frontend pe bhejo, JSON mat bhejo
+            const msg = encodeURIComponent(
+                  error.message ?? "OAuth or sync failed",
             );
-            return res.status(500).json({
-                  status: "error",
-                  message:
-                        error.message ||
-                        "OAuth lifecycle or automatic sync failed",
-            });
+            return res.redirect(
+                  `${FRONTEND_URL}/auth/github/callback?status=error&message=${msg}`,
+            );
       }
 };
 
@@ -95,5 +98,24 @@ export const handleGithubUnlink = async (req: Request, res: Response) => {
                   status: "error",
                   message: error.message || "Database unlinking action fault",
             });
+      }
+};
+
+export const handleGithubProfile = async (req: Request, res: Response) => {
+      try {
+            const userId = (req as any).user?._id;
+            const profile = await GithubProfile.findOne({ userId }).lean();
+            if (!profile)
+                  return res
+                        .status(404)
+                        .json({
+                              status: "error",
+                              message: "Profile nahi mili",
+                        });
+            return res.status(200).json({ status: "success", data: profile });
+      } catch (error: any) {
+            return res
+                  .status(500)
+                  .json({ status: "error", message: error.message });
       }
 };
