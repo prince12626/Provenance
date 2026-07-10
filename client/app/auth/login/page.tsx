@@ -8,51 +8,6 @@ import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth";
 
 export default function LoginPage() {
-      const router = useRouter();
-
-      // Local reactive ecosystem states
-      const [email, setEmail] = useState("");
-      const [password, setPassword] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [errorMessage, setErrorMessage] = useState("");
-
-      // 1. Email & Password Standard Form Login Handler
-      const handleCredentialsLogin = async (e: React.FormEvent) => {
-            e.preventDefault();
-            if (!email || !password) return;
-
-            setLoading(true);
-            setErrorMessage("");
-
-            await authClient.signIn.email({
-                  email,
-                  password,
-                  fetchOptions: {
-                        onRequest: () => setLoading(true),
-                        onSuccess: () => {
-                              setLoading(false);
-                              router.push("/dashboard"); // Redirect target after successful session injection
-                        },
-                        onError: (ctx) => {
-                              setLoading(false);
-                              setErrorMessage(
-                                    ctx.error.message ||
-                                          "Invalid email or password credentials",
-                              );
-                        },
-                  },
-            });
-      };
-
-      // 2. Social OAuth Login Handler (GitHub/Google Execution Context)
-      const handleSocialLogin = async (provider: "github" | "google") => {
-            setLoading(true);
-            await authClient.signIn.social({
-                  provider,
-                  callbackURL: "/dashboard",
-            });
-      };
-
       return (
             <main className="relative min-h-screen bg-[url(https://images.pexels.com/photos/1612367/pexels-photo-1612367.jpeg)] bg-cover bg-center flex items-center justify-center px-4">
                   {/* Dark Overlay */}
@@ -120,7 +75,6 @@ export default function LoginPage() {
 
                         {/* GitHub Integration Strategy Trigger Hook */}
                         <Button
-                              onClick={() => handleSocialLogin("google")}
                               variant="secondary"
                               size="lg"
                               className="w-full flex items-center justify-center gap-3 border border-white/10 hover:bg-white/5 transition-all text-white"

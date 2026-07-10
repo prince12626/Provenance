@@ -153,7 +153,6 @@ export default function RegisterPage() {
 
                         {/* GitHub Social Hub Trigger Hook */}
                         <Button
-                              onClick={() => handleSocialSignUp("google")}
                               variant="secondary"
                               size="lg"
                               className="w-full flex items-center justify-center gap-3 border border-white/10 hover:bg-white/5 transition-all text-white"
