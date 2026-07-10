@@ -3,6 +3,7 @@
 import Button from "@/components/Button";
 import Input from "@/components/Input";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LoginPage() {
       return (
@@ -10,7 +11,7 @@ export default function LoginPage() {
                   {/* Dark Overlay */}
                   <div className="absolute inset-0 bg-black/70" />
 
-                  <div className="relative z-10 w-full max-w-md border border-white/10 bg-black/50 backdrop-blur-xl p-8">
+                  <div className="relative z-10 w-full max-w-lg border border-white/10 bg-black/50 backdrop-blur-xl p-8">
                         <div className="mb-8">
                               <h1 className="text-3xl font-semibold text-white">
                                     Welcome back
@@ -60,9 +61,12 @@ export default function LoginPage() {
 
                         <p className="text-center text-white/50 text-sm mt-6">
                               Don't have an account?{" "}
-                              <span className="text-white cursor-pointer hover:underline">
+                              <Link
+                                    href="/auth/register"
+                                    className="text-white cursor-pointer hover:underline"
+                              >
                                     Sign up
-                              </span>
+                              </Link>
                         </p>
                   </div>
             </main>

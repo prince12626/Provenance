@@ -42,6 +42,8 @@ const Button = ({
                         transition-all 
                         disabled:opacity-50 
                         disabled:cursor-not-allowed
+                        hover:rounded-md
+                        duration-300
                         ${variants[variant]}
                         ${sizes[size]}
                         ${className}
